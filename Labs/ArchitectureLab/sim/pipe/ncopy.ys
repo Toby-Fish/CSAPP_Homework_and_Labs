@@ -1,0 +1,104 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Include your name and ID here.
+#
+# Describe how and why you modified the baseline code.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+	# Loop header
+	xorq %rax, %rax		# count = 0;
+	iaddq $-8, %rdx		# len -= 8
+	andq %rdx, %rdx		# len < 0?
+	jl Remain		# if so, goto Remain:
+	
+Loop:	
+	mrmovq (%rdi), %r10	# read val from src...
+	mrmovq 8(%rdi), %r11
+	mrmovq 16(%rdi), %r12
+	mrmovq 24(%rdi), %r13
+	andq %r10, %r10		# val <= 0?
+	rmmovq %r10, (%rsi)	# ...and store it to dst
+	jle Npos1		# if so, goto Npos:
+	iaddq $1, %rax		# count++
+Npos1:
+	andq %r11, %r11
+	rmmovq %r11, 8(%rsi)
+	jle Npos2
+	iaddq $1, %rax
+Npos2:
+	andq %r12, %r12
+	rmmovq %r12, 16(%rsi)
+	jle Npos3
+	iaddq $1, %rax
+Npos3:
+	andq %r13, %r13
+	rmmovq %r13, 24(%rsi)
+	jle Npos4
+	iaddq $1, %rax
+Npos4:
+	iaddq $32, %rdi		# src+=4
+	iaddq $32, %rsi		# dst+=4
+	
+	mrmovq (%rdi), %r10	# read val from src...
+	mrmovq 8(%rdi), %r11
+	mrmovq 16(%rdi), %r12
+	mrmovq 24(%rdi), %r13
+	andq %r10, %r10		# val <= 0?
+	rmmovq %r10, (%rsi)	# ...and store it to dst
+	jle Npos5		# if so, goto Npos:
+	iaddq $1, %rax		# count++
+Npos5:
+	andq %r11, %r11
+	rmmovq %r11, 8(%rsi)
+	jle Npos6
+	iaddq $1, %rax
+Npos6:
+	andq %r12, %r12
+	rmmovq %r12, 16(%rsi)
+	jle Npos7
+	iaddq $1, %rax
+Npos7:
+	andq %r13, %r13
+	rmmovq %r13, 24(%rsi)
+	jle Npos8
+	iaddq $1, %rax
+Npos8:
+	iaddq $32, %rdi		# src+=4
+	iaddq $32, %rsi		# dst+=4
+	
+	iaddq $-8, %rdx		# len -= 8
+	jge Loop			# if so, goto Loop:
+Remain:
+	iaddq $8, %rdx
+	je Done
+Final_loop:
+	mrmovq (%rdi), %r10	# read val from src...
+	andq %r10, %r10		# val <= 0?
+	rmmovq %r10, (%rsi)	# ...and store it to dst
+	jle Npos9		# if so, goto Npos9:
+	iaddq $1, %rax		# count++
+Npos9:	
+	iaddq $8, %rdi		# src++
+	iaddq $8, %rsi		# dst++
+	iaddq $-1, %rdx		# len--
+	jg Final_loop
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */

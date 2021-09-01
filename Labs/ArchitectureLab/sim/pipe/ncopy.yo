@@ -1,0 +1,44 @@
+                            | #/* $begin ncopy-ys */
+                            | ##################################################################
+                            | # ncopy.ys - Copy a src block of len words to dst.
+                            | # Return the number of positive words (>0) contained in src.
+                            | #
+                            | # Include your name and ID here.
+                            | #
+                            | # Describe how and why you modified the baseline code.
+                            | #
+                            | ##################################################################
+                            | # Do not modify this portion
+                            | # Function prologue.
+                            | # %rdi = src, %rsi = dst, %rdx = len
+0x000:                      | ncopy:
+                            | 
+                            | ##################################################################
+                            | # You can modify this portion
+                            | 	# Loop header
+0x000: 6222                 | 	andq %rdx, %rdx		# len <= 0?
+0x002: 715300000000000000   | 	jle Done		# if so, goto Done:
+0x00b: 6300                 | 	xorq %rax, %rax		# count = 0;
+0x00d: 30fb0100000000000000 | 	irmovq $1, %r11
+0x017: 30fc0800000000000000 | 	irmovq $8, %r12
+                            | 
+0x021: 50a70000000000000000 | Loop:	mrmovq (%rdi), %r10	# read val from src...
+0x02b: 40a60000000000000000 | 	rmmovq %r10, (%rsi)	# ...and store it to dst
+0x035: 62aa                 | 	andq %r10, %r10		# val <= 0?
+0x037: 714200000000000000   | 	jle Npos		# if so, goto Npos:
+0x040: 60b0                 | 	addq %r11, %rax		# count++
+0x042:                      | Npos:	
+0x042: 61b2                 | 	subq %r11, %rdx		# len--
+0x044: 60c7                 | 	addq %r12, %rdi		# src++
+0x046: 60c6                 | 	addq %r12, %rsi		# dst++
+0x048: 6222                 | 	andq %rdx,%rdx		# len > 0?
+0x04a: 762100000000000000   | 	jg Loop			# if so, goto Loop:
+                            | ##################################################################
+                            | # Do not modify the following section of code
+                            | # Function epilogue.
+0x053:                      | Done:
+0x053: 90                   | 	ret
+                            | ##################################################################
+                            | # Keep the following label at the end of your function
+0x054:                      | End:
+                            | #/* $end ncopy-ys */
